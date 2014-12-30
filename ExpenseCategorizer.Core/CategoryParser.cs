@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ExpenseCategorizer.Model.CategoryModel;
+using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExpenseCategorizer.Model;
+using System.Xml.Linq;
 
 namespace ExpenseCategorizer.Core
 {
@@ -17,16 +15,28 @@ namespace ExpenseCategorizer.Core
             get { return _categories.Value; }
         }
 
-
         public CategoryParser(string categoryXml)
         {
             _categoryXml = categoryXml;
             _categories = new Lazy<CategoryCollection>(ParseCollection);
         }
 
-        private static CategoryCollection ParseCollection()
+        private CategoryCollection ParseCollection()
         {
-            throw new NotImplementedException();
+            var doc = XDocument.Parse(_categoryXml);
+
+            var collection = new CategoryCollection();
+
+            foreach (var element in doc.Descendants("categories").Descendants("category"))
+            {
+                collection.Add(new Category
+                {
+                    Name = element.Attribute("name").Value,
+                    Patterns = element.Descendants("input").Select(input => new CategoryInputPattern(input.Value))
+                });
+            }
+
+            return collection;
         }
     }
 }

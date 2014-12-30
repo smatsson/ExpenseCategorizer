@@ -1,15 +1,13 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
 
 namespace ExpenseCategorizer.Test
 {
     [TestClass]
     public class CategoryParser
     {
-        [TestMethod]
-        public void CategoryParser_Can_Read_Categories()
-        {
-            const string categoryFile = @"
+        private const string CategoryFile = @"
                         <categories>
                             <category name=""Food"">
                                 <input>^ICA</input>
@@ -17,28 +15,52 @@ namespace ExpenseCategorizer.Test
                             </category>
                         </categories>";
 
-            var categories = new Core.CategoryParser(categoryFile).Categories;
+        [TestMethod]
+        public void CategoryParser_Can_Read_Categories()
+        {
+            var categories = new Core.CategoryParser(CategoryFile).Categories;
 
-            Assert.AreEqual("Food", categories.FindCategory("ICA Kvantum."));
-            Assert.AreEqual("Food", categories.FindCategory("Stora huset Coop."));
-            Assert.IsNull(categories.FindCategory("Kvantum ICA."));
-            Assert.IsNull(categories.FindCategory(" ICA"));
-            Assert.IsNull(categories.FindCategory("Willys"));
+            Assert.AreEqual("Food", categories.FindCategories("ICA Kvantum.").First());
+            Assert.AreEqual("Food", categories.FindCategories("Stora huset Coop.").First());
+            Assert.IsNull(categories.FindCategories("Kvantum ICA."));
+            Assert.IsNull(categories.FindCategories(" ICA"));
+            Assert.IsNull(categories.FindCategories("Willys"));
         }
 
         [TestMethod]
-        [ExpectedException(typeof(Exception))]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
         public void Invalid_Category_Input_Throws_Exception()
         {
-            new Core.CategoryParser("");
-            new Core.CategoryParser("a;b;c");
-            new Core.CategoryParser(@"
+            // ReSharper disable ObjectCreationAsStatement
+            // ReSharper disable once NotAccessedVariable
+            var a = new Core.CategoryParser("").Categories;
+            // ReSharper disable RedundantAssignment
+            a = new Core.CategoryParser("a;b;c").Categories;
+            a = new Core.CategoryParser(@"
                         <a>
                             <b name=""Food"">
                                 <input>^ICA</input>
                                 <input>Coop</input>
                             </b>
-                        </a>");
+                        </a>").Categories;
+            // ReSharper restore RedundantAssignment
+            // ReSharper restore ObjectCreationAsStatement
+        }
+
+        [TestMethod]
+        public void Categories_Can_Be_Iterated()
+        {
+            var index = 0;
+            var patterns = new[] { "^ICA", "Coop" };
+
+            var categories = new Core.CategoryParser(CategoryFile).Categories;
+            Assert.AreEqual(1, categories.Count());
+            Assert.AreEqual("Food", categories.First().Name);
+            foreach (var input in categories.First().Patterns)
+            {
+                Assert.AreEqual(patterns[index], input.Pattern.ToString());
+                index++;
+            }
         }
     }
 }
