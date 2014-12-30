@@ -39,6 +39,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalculationModel\CategoryMonthSummary.cs" />
+    <Compile Include="CalculationModel\CategorySummary.cs" />
+    <Compile Include="CalculationModel\CategorySummaryCollection.cs" />
     <Compile Include="CategoryModel\Category.cs" />
     <Compile Include="CategoryModel\CategoryCollection.cs" />
     <Compile Include="CategoryModel\CategoryInputPattern.cs" />

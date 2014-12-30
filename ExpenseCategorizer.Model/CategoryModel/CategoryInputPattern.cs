@@ -8,7 +8,7 @@ namespace ExpenseCategorizer.Model.CategoryModel
 
         public CategoryInputPattern(string pattern)
         {
-            Pattern = new Regex(pattern);
+            Pattern = new Regex(pattern, RegexOptions.IgnoreCase);
         }
     }
 }

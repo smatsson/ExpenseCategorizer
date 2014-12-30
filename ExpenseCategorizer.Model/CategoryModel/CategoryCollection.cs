@@ -23,7 +23,9 @@ namespace ExpenseCategorizer.Model.CategoryModel
             var result = (from category in _list
                 from pattern in category.Patterns
                 where pattern.Pattern.IsMatch(value)
-                select category.Name).ToArray();
+                select category.Name)
+                .Distinct()
+                .ToArray();
 
             return result.Any() ? result : null;
         }
