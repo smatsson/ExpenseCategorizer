@@ -91,13 +91,16 @@ namespace ExpenseCategorizer.UI.Console
             using (var sw = File.CreateText(Path.Combine(GetAssemblyDirectory(), "result.csv")))
             {
                 // Headers
-                sw.WriteLine("Category\t{0}", string.Join("\t", allMonths.Select(f => f.ToString("yyyy-MM"))));
+                sw.WriteLine("Category\tTotal\tAverage\t{0}", string.Join("\t", allMonths.Select(f => f.ToString("yyyy-MM"))));
 
                 // Rows
                 foreach (var category in result)
                 {
-                    var categoryRow = new List<string>();
-                    categoryRow.Add(category.Category);
+                    var categoryRow = new List<string> {category.Category};
+                    
+                    categoryRow.Add(category.Total.ToString(culture));
+                    categoryRow.Add((category.Total/allMonths.Count).ToString("F", culture));
+
                     categoryRow.AddRange(
                         allMonths.Select(month => category.MonthSummaries.FirstOrDefault(f => f.Month == month))
                             .Select(
@@ -115,9 +118,9 @@ namespace ExpenseCategorizer.UI.Console
         {
             using (var sw = File.CreateText(Path.Combine(GetAssemblyDirectory(), "unknown.txt")))
             {
-                foreach (var unknown in unknownCategories)
+                foreach (var unknown in unknownCategories.Select(f => f.Name).Distinct())
                 {
-                    sw.WriteLine(unknown.Name);
+                    sw.WriteLine(unknown);
                 }
             }
         }
