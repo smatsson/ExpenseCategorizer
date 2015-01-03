@@ -1,4 +1,5 @@
-﻿using ExpenseCategorizer.Model.CategoryModel;
+﻿using System.Globalization;
+using ExpenseCategorizer.Model.CategoryModel;
 using ExpenseCategorizer.Model.TransactionModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -21,7 +22,7 @@ namespace ExpenseCategorizer.Test
             NameColumn = 2,
             ValueColumn = 3,
             DateTimeFormat = "yyyy-MM-dd",
-            ValueCulture = "sv-SE"
+            ValueCulture = new CultureInfo("sv-SE")
         };
 
         private const string CategoryFile = @"
@@ -92,7 +93,7 @@ namespace ExpenseCategorizer.Test
                 NameColumn = 0,
                 ValueColumn = 1,
                 DateTimeFormat = "yyyy-MM-dd",
-                ValueCulture = "sv-SE"
+                ValueCulture = new CultureInfo("sv-SE")
             });
 
             Assert.AreEqual(1, transactionParser.Transactions.Count(), "Transaction count does not match.");

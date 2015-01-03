@@ -1,5 +1,8 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Reflection;
+using System.Text;
 using ExpenseCategorizer.Core;
+using ExpenseCategorizer.Model.CalculationModel;
 using ExpenseCategorizer.Model.TransactionModel;
 using System;
 using System.Globalization;
@@ -48,16 +51,19 @@ namespace ExpenseCategorizer.UI.Console
 
                 var unknownCategories = transactions.Where(f => f.Categories == null || !f.Categories.Any()).ToArray();
 
-                if (!unknownCategories.Any())
+                if (unknownCategories.Any())
                 {
-                    return;
+                    WriteLine("Could not determine categories for the following transactions:");
+                    foreach (var unknown in unknownCategories)
+                    {
+                        WriteLine("{0} - {1}", unknown.Name, unknown.DateTime.ToString(options.DateTimeFormat));
+                    }
+
+                    EmptyLine();
                 }
 
-                WriteLine("Could not determine categories for the following transactions:");
-                foreach (var unknown in unknownCategories)
-                {
-                    WriteLine("{0} - {1}", unknown.Name, unknown.DateTime.ToString(options.DateTimeFormat));
-                }
+                WriteResultToDisk(result, options.ValueCulture);
+                WriteUnknownToDisk(unknownCategories);
 
                 EmptyLine();
                 EmptyLine();
@@ -72,6 +78,54 @@ namespace ExpenseCategorizer.UI.Console
                 WriteLine("Press any key to exit.");
                 System.Console.ReadKey(false);
             }
+        }
+
+        private static void WriteResultToDisk(CategorySummaryCollection result, CultureInfo culture)
+        {
+            var allMonths =
+                result.SelectMany(f => f.MonthSummaries.Select(m => m.Month))
+                    .Distinct()
+                    .OrderByDescending(f => f)
+                    .ToList();
+
+            using (var sw = File.CreateText(Path.Combine(GetAssemblyDirectory(), "result.csv")))
+            {
+                // Headers
+                sw.WriteLine("Category\t{0}", string.Join("\t", allMonths.Select(f => f.ToString("yyyy-MM"))));
+
+                // Rows
+                foreach (var category in result)
+                {
+                    var categoryRow = new List<string>();
+                    categoryRow.Add(category.Category);
+                    categoryRow.AddRange(
+                        allMonths.Select(month => category.MonthSummaries.FirstOrDefault(f => f.Month == month))
+                            .Select(
+                                dataForMonth =>
+                                    dataForMonth == null
+                                        ? "0"
+                                        : dataForMonth.Total.ToString(culture)));
+                    sw.WriteLine(string.Join("\t", categoryRow));
+                }
+            }
+
+        }
+
+        private static void WriteUnknownToDisk(IEnumerable<Transaction> unknownCategories)
+        {
+            using (var sw = File.CreateText(Path.Combine(GetAssemblyDirectory(), "unknown.txt")))
+            {
+                foreach (var unknown in unknownCategories)
+                {
+                    sw.WriteLine(unknown.Name);
+                }
+            }
+        }
+
+        private static string GetAssemblyDirectory()
+        {
+            return Path.GetDirectoryName(
+                Uri.UnescapeDataString(new UriBuilder(Assembly.GetExecutingAssembly().CodeBase).Path));
         }
 
         #region Console helpers
@@ -99,7 +153,10 @@ namespace ExpenseCategorizer.UI.Console
             options.DateTimeFormat = ReadString("DateTime format (default yyyy-MM-dd): ", "yyyy-MM-dd");
             options.NameColumn = ReadNumber("Transaction name column number (default 2): ", 2);
             options.ValueColumn = ReadNumber("Value/amount column number (default 3): ", 3);
-            options.ValueCulture = ReadString("Culture to use when parsing values (default sv-SE): ", "sv-SE");
+
+            var valueCulture = ReadString("Culture to use when parsing values (default sv-SE): ", "sv-SE");
+            options.ValueCulture = new CultureInfo(valueCulture);
+
             return options;
         }
 

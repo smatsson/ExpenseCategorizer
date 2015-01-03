@@ -44,10 +44,9 @@ namespace ExpenseCategorizer.Core
                         };
 
                         var valueString = csvReader.GetField<string>(_options.ValueColumn);
-                        var culture = new CultureInfo(_options.ValueCulture);
 
                         decimal value;
-                        if (!decimal.TryParse(valueString, NumberStyles.Number, culture, out value))
+                        if (!decimal.TryParse(valueString, NumberStyles.Number, _options.ValueCulture, out value))
                         {
                             throw new Exception(string.Format("Could not parse value on row {0}", rowCount));
                         }
