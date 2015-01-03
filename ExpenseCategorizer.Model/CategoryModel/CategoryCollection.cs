@@ -8,9 +8,12 @@ namespace ExpenseCategorizer.Model.CategoryModel
     {
         private readonly List<Category> _list;
 
+        private readonly Dictionary<string, IEnumerable<string>> _categoryLookupCache;
+
         public CategoryCollection()
         {
             _list = new List<Category>();
+            _categoryLookupCache = new Dictionary<string, IEnumerable<string>>();
         }
 
         public void Add(Category category)
@@ -20,6 +23,11 @@ namespace ExpenseCategorizer.Model.CategoryModel
 
         public IEnumerable<string> FindCategories(string value)
         {
+            if (_categoryLookupCache.ContainsKey(value))
+            {
+                return new List<string>(_categoryLookupCache[value]);
+            }
+
             var result = (from category in _list
                 from pattern in category.Patterns
                 where pattern.Pattern.IsMatch(value)
@@ -27,7 +35,9 @@ namespace ExpenseCategorizer.Model.CategoryModel
                 .Distinct()
                 .ToArray();
 
-            return result.Any() ? result : null;
+            var res = result.Any() ? result : null;
+            _categoryLookupCache.Add(value, res);
+            return res;
         }
 
         public IEnumerator<Category> GetEnumerator()
