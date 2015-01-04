@@ -1,9 +1,9 @@
-﻿using ExpenseCategorizer.Model.TransactionModel;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
+using ExpenseCategorizer.Model.TransactionModel;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ExpenseCategorizer.Test
+namespace ExpenseCategorizer.Test.Core
 {
     [TestClass]
     public class Calculator
@@ -49,7 +49,7 @@ namespace ExpenseCategorizer.Test
         [TestMethod]
         public void Calculator_Can_Sum_Transactions()
         {
-            var calc = new Core.Calculator();
+            var calc = new ExpenseCategorizer.Core.Calculator();
             var result = calc.Calculate(_transactions);
 
             Assert.AreEqual(2, result.Count(), "Number of categories did not match.");

@@ -1,8 +1,8 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
 using System.Linq;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace ExpenseCategorizer.Test
+namespace ExpenseCategorizer.Test.Core
 {
     [TestClass]
     public class CategoryParser
@@ -18,7 +18,7 @@ namespace ExpenseCategorizer.Test
         [TestMethod]
         public void CategoryParser_Can_Read_Categories()
         {
-            var categories = new Core.CategoryParser(CategoryFile).Categories;
+            var categories = new ExpenseCategorizer.Core.CategoryParser(CategoryFile).Categories;
 
             Assert.AreEqual("Food", categories.FindCategories("ICA Kvantum.").First());
             Assert.AreEqual("Food", categories.FindCategories("Stora huset Coop.").First());
@@ -33,10 +33,10 @@ namespace ExpenseCategorizer.Test
         {
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable once NotAccessedVariable
-            var a = new Core.CategoryParser("").Categories;
+            var a = new ExpenseCategorizer.Core.CategoryParser("").Categories;
             // ReSharper disable RedundantAssignment
-            a = new Core.CategoryParser("a;b;c").Categories;
-            a = new Core.CategoryParser(@"
+            a = new ExpenseCategorizer.Core.CategoryParser("a;b;c").Categories;
+            a = new ExpenseCategorizer.Core.CategoryParser(@"
                         <a>
                             <b name=""Food"">
                                 <input>^ICA</input>
@@ -53,7 +53,7 @@ namespace ExpenseCategorizer.Test
             var index = 0;
             var patterns = new[] { "^ICA", "Coop" };
 
-            var categories = new Core.CategoryParser(CategoryFile).Categories;
+            var categories = new ExpenseCategorizer.Core.CategoryParser(CategoryFile).Categories;
             Assert.AreEqual(1, categories.Count());
             Assert.AreEqual("Food", categories.First().Name);
             foreach (var input in categories.First().Patterns)

@@ -1,11 +1,11 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
+using System.Linq;
 using ExpenseCategorizer.Model.CategoryModel;
 using ExpenseCategorizer.Model.TransactionModel;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
-using System.Linq;
 
-namespace ExpenseCategorizer.Test
+namespace ExpenseCategorizer.Test.Core
 {
     [TestClass]
     public class TransactionParser
@@ -42,8 +42,8 @@ namespace ExpenseCategorizer.Test
         [TestMethod]
         public void TransactionParser_Can_Parse_Transactions()
         {
-            var categoryParser = new Core.CategoryParser(CategoryFile);
-            var transactionParser = new Core.TransactionParser(TransactionCsv, categoryParser.Categories, _parserOptions);
+            var categoryParser = new ExpenseCategorizer.Core.CategoryParser(CategoryFile);
+            var transactionParser = new ExpenseCategorizer.Core.TransactionParser(TransactionCsv, categoryParser.Categories, _parserOptions);
             Assert.AreEqual(3, transactionParser.Transactions.Count());
 
             var first = transactionParser.Transactions.First();
@@ -87,7 +87,7 @@ namespace ExpenseCategorizer.Test
                 }
             };
 
-            var transactionParser = new Core.TransactionParser("name\t-100\t2014-10-27", categories, new TransactionParserOptions
+            var transactionParser = new ExpenseCategorizer.Core.TransactionParser("name\t-100\t2014-10-27", categories, new TransactionParserOptions
             {
                 DateTimeColumn = 2,
                 NameColumn = 0,
@@ -113,20 +113,20 @@ namespace ExpenseCategorizer.Test
         [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
         public void InvalidData_Throws_Exception()
         {
-            var categories = new Core.CategoryParser(CategoryFile).Categories;
+            var categories = new ExpenseCategorizer.Core.CategoryParser(CategoryFile).Categories;
             // ReSharper disable ObjectCreationAsStatement
             // ReSharper disable once NotAccessedVariable
-            var a = new Core.TransactionParser("", categories, _parserOptions).Transactions;
+            var a = new ExpenseCategorizer.Core.TransactionParser("", categories, _parserOptions).Transactions;
             // Invalid separator
             // ReSharper disable RedundantAssignment
-            a = new Core.TransactionParser("a;b;c", categories, _parserOptions).Transactions;
+            a = new ExpenseCategorizer.Core.TransactionParser("a;b;c", categories, _parserOptions).Transactions;
 
             // Invalid number of columns
-            a = new Core.TransactionParser("a\tb\tc", categories, _parserOptions).Transactions;
-            a = new Core.TransactionParser("<first>a</first>", categories, _parserOptions).Transactions;
+            a = new ExpenseCategorizer.Core.TransactionParser("a\tb\tc", categories, _parserOptions).Transactions;
+            a = new ExpenseCategorizer.Core.TransactionParser("<first>a</first>", categories, _parserOptions).Transactions;
             // Invalid datetime format.
             a =
-                new Core.TransactionParser("2014/12/27	2014-12-27	Kattförsäkring	-500", categories, _parserOptions)
+                new ExpenseCategorizer.Core.TransactionParser("2014/12/27	2014-12-27	Kattförsäkring	-500", categories, _parserOptions)
                     .Transactions;
             // ReSharper restore RedundantAssignment
             // ReSharper restore ObjectCreationAsStatement
@@ -135,8 +135,8 @@ namespace ExpenseCategorizer.Test
         [TestMethod]
         public void Transactions_With_Unknown_Categories_Have_Categories_Set_To_Null()
         {
-            var categories = new Core.CategoryParser(CategoryFile).Categories;
-            var transactions = new Core.TransactionParser("2014-12-27	2014-12-27	Other	-500	13 048,05", categories,
+            var categories = new ExpenseCategorizer.Core.CategoryParser(CategoryFile).Categories;
+            var transactions = new ExpenseCategorizer.Core.TransactionParser("2014-12-27	2014-12-27	Other	-500	13 048,05", categories,
                 _parserOptions).Transactions;
 
             Assert.AreEqual(1, transactions.Count(), "Transaction count does not match.");
