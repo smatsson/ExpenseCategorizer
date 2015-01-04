@@ -4,11 +4,11 @@ ExpenseCategorizer
 Tool for categorizing and summarizing bank statements from CSV data.
 
 ##Usage
-* 1. Create a category mapping (see section below).
-* 2. Fetch the transaction data from your bank in a CSV format (instructions for Länsförsäkringar in ExpenseCategorizer.Utils.InputPreparation)
-* 3. Run application: expensecategorizer `[path to transaction csv] [path to category file]`
-* 4. View result.csv and unknown.txt
-* 5. Done! :) 
+1. Create a category mapping (see section below).
+2. Fetch the transaction data from your bank in a CSV format (instructions for Länsförsäkringar in ExpenseCategorizer.Utils.InputPreparation)
+3. Run application: expensecategorizer `[path to transaction csv] [path to category file]`
+4. View result.csv and unknown.txt
+5. Done! :) 
 
 ##Transaction data
 
