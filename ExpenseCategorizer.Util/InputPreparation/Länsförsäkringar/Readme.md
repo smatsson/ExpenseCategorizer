@@ -3,7 +3,7 @@ Instructions in Swedish as LF is a swedish bank.
 
 Förberedelser som behövs för Länsförsäkringar.
 
-1. Logga in och ta fram ditt kontoutdrag så långt som du vill ha med.
+1. Logga in och ta fram ditt kontoutdrag så långt som du vill ha med. **Kom ihåg** att göra detta för alla konton du vill ha med och lägg ihop outputen till en enda fil.
 2. Kör följande i console (i Chrome):
 	```javascript
 	document.querySelector("[aria-label=Transaktionshistorik]").outerHTML
