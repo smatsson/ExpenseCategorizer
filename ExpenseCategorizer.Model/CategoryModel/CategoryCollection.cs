@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -35,7 +36,7 @@ namespace ExpenseCategorizer.Model.CategoryModel
                 .Distinct()
                 .ToArray();
 
-            var res = result.Any() ? result : null;
+            var res = result.Length > 0 ? result : new string[0];
             _categoryLookupCache.Add(value, res);
             return res;
         }

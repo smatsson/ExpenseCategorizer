@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
+﻿using System.Text;
 using ExpenseCategorizer.Core;
-using ExpenseCategorizer.Model.CalculationModel;
 using ExpenseCategorizer.Model.TransactionModel;
 using System;
 using System.Globalization;
@@ -11,9 +8,9 @@ using System.Linq;
 
 namespace ExpenseCategorizer.UI.Console
 {
-    class Program
+    public static class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
             try
             {
@@ -49,9 +46,9 @@ namespace ExpenseCategorizer.UI.Console
                 EmptyLine();
                 EmptyLine();
 
-                var unknownCategories = transactions.Where(f => f.Categories == null || !f.Categories.Any()).ToArray();
+                var unknownCategories = transactions.Where(f => f.Categories?.Any() != true).ToArray();
 
-                if (unknownCategories.Any())
+                if (unknownCategories.Length > 0)
                 {
                     WriteLine("Could not determine categories for the following transactions:");
                     foreach (var unknown in unknownCategories)

@@ -5,6 +5,7 @@ using CsvHelper.Configuration;
 using ExpenseCategorizer.Model.CategoryModel;
 using ExpenseCategorizer.Model.TransactionModel;
 using System;
+using System.Linq;
 
 namespace ExpenseCategorizer.Core
 {
@@ -22,6 +23,7 @@ namespace ExpenseCategorizer.Core
 
         public TransactionParser(string transactionCsv, CategoryCollection categories, TransactionParserOptions options)
         {
+
             _transactionCsv = transactionCsv;
             _categories = categories;
             _transactions = new Lazy<TransactionCollection>(ParseTransactions);
@@ -38,6 +40,10 @@ namespace ExpenseCategorizer.Core
                 {
                     while (csvReader.Read())
                     {
+
+                        if (IsEmpty(csvReader.CurrentRecord))
+                            continue;
+
                         var transaction = new Transaction
                         {
                             Name = csvReader.GetField<string>(_options.NameColumn)
@@ -78,6 +84,11 @@ namespace ExpenseCategorizer.Core
             }
 
             return transactions;
+        }
+
+        private bool IsEmpty(string[] currentRecord)
+        {
+            return currentRecord.All(x => string.IsNullOrWhiteSpace(x));
         }
     }
 }
